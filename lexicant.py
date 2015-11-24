@@ -41,9 +41,11 @@ def show_credits():
     print()
     
 def show_menu():
-    print("Type 1 to begin playing!")
-    print("Type 2 to view the rules.")
-    print("Type 3 to exit.")
+    print("--Lexicant Game Menu--")
+    print()
+    print("Choose 1 to begin playing!")
+    print("Choose 2 to view the rules.")
+    print("Choose 3 to exit.")
     print()
 
 def show_rules():
@@ -98,45 +100,7 @@ def get_start_letter():
         if len(text) == 1 and text.islower() and text.isalpha():
             return text
 
-            
-def play(players, word_list):
-    whole_word = False
-    partial_word = True
-    num_players = len(players)
-    turn = num_players + 1 
-    # The initial value is set to this so it will get
-    # set to 0 when the game loop starts.
-    
-    text = get_start_letter()
-    
-    while not whole_word and partial_word:
-        
-        turn = (turn + 1) % num_players
-        
-        print("--Player", players[turn], "is up!--")
-        
-        while True:
-            print()
-            print("Enter a letter preceded or followed by a + sign.")
-            letter = input("> ")
-            
-            if "+" in letter and len(letter) == 2 and letter != "++":
-                text = add_letter(letter, text)
-                break
-            else:
-                print("Invalid input. Try again")
-            
-        partial_word = is_partial_word(text, word_list)
-        
-        if partial_word and len(text) > 3:
-            whole_word = is_whole_word(text, word_list)
-        
-        # This will be spruced up later, but for now, it works!
-        print("Text:", text)
-        print("Partial:", partial_word, "Whole:", whole_word)
-    
-    
-    # Game over screen. Probably will be moved to a function later.
+def game_over_splash(players, turn):
     print()
     print("""
                    *              )               (      ____ 
@@ -148,8 +112,51 @@ def play(players, word_list):
   | (_ | / _ \  | |\/| || _|  | (_) |\ V /  | _| |   / )\     
    \___|/_/ \_\ |_|  |_||___|  \___/  \_/   |___||_|_\((_)    """)
     print()
-    loser = "Player " + players[turn] + " loses!"
+    winner = "Player " + players[turn] + " wins!"
+    loser = players[(turn - 1)] + " loses!"
+    print(winner.center(62, " "))
     print(loser.center(62, " "))
+    
+def get_letter():
+    while True:
+        print()
+        print("Enter a letter preceded or followed by a + sign.")
+        letter = input("> ")
+        
+        if "+" in letter and len(letter) == 2 and letter != "++":
+            return letter
+        else:
+            print("Invalid input. Try again")
+                
+def play(players, word_list):
+    # Sets initial values
+    whole_word = False
+    partial_word = True
+    num_players = len(players)
+    turn = 0
+    text = get_start_letter()
+    
+    while not whole_word and partial_word:
+        
+        print("--Player", players[turn], "is up!--")
+        
+        letter = get_letter()
+        
+        text = add_letter(letter, text)
+             
+        partial_word = is_partial_word(text, word_list)
+        
+        if partial_word and len(text) > 3:
+            whole_word = is_whole_word(text, word_list)
+        
+        # This will be spruced up later, but for now, it works!
+        print("Text:", text)
+        print("Partial:", partial_word, "Whole:", whole_word)
+        
+        turn = (turn + 1) % num_players
+    
+    game_over_splash(players, turn)
+    
         
 # main - DO NOT MODIFY CODE BELOW THIS LINE!
 show_start_screen()
