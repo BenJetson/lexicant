@@ -70,29 +70,87 @@ def get_player_names():
     
     return [player1, player2]
 
-def add_letter(text):
-    if "+" in text and len(text) == 2 and text!= "++":
-        if text.endswith("+"):
-            text = text.strip("+") + text
-        elif text.startswith("+"):
-            text += text.strip("+")
+def add_letter(letter, text):
+    
+    if letter.endswith("+") and letter[0].isalpha() and letter[0].islower():
+        return (letter.strip("+") + text)
+    elif letter.startswith("+") and letter[-1].isalpha() and letter[-1].islower():
+        return (text + letter.strip("+"))
 
-def is_whole_word(text):
+def is_whole_word(text, word_list):
     if text in word_list:
         return True
     
     return False
 
-def is_partial_word(text):
+def is_partial_word(text, word_list):
     for i in word_list:
         if text in i:
             return True
     
     return False
-   
-def play(players, word_list):
-    pass
 
+def get_start_letter():
+    while True:
+        print("Please input a starting letter.")
+        text = input("> ")
+        
+        if len(text) == 1 and text.islower() and text.isalpha():
+            return text
+
+            
+def play(players, word_list):
+    whole_word = False
+    partial_word = True
+    num_players = len(players)
+    turn = num_players + 1 
+    # The initial value is set to this so it will get
+    # set to 0 when the game loop starts.
+    
+    text = get_start_letter()
+    
+    while not whole_word and partial_word:
+        
+        turn = (turn + 1) % num_players
+        
+        print("--Player", players[turn], "is up!--")
+        
+        while True:
+            print()
+            print("Enter a letter preceded or followed by a + sign.")
+            letter = input("> ")
+            
+            if "+" in letter and len(letter) == 2 and letter != "++":
+                text = add_letter(letter, text)
+                break
+            else:
+                print("Invalid input. Try again")
+            
+        partial_word = is_partial_word(text, word_list)
+        
+        if partial_word and len(text) > 3:
+            whole_word = is_whole_word(text, word_list)
+        
+        # This will be spruced up later, but for now, it works!
+        print("Text:", text)
+        print("Partial:", partial_word, "Whole:", whole_word)
+    
+    
+    # Game over screen. Probably will be moved to a function later.
+    print()
+    print("""
+                   *              )               (      ____ 
+ (        (      (  `          ( /(               )\ )  |   / 
+ )\ )     )\     )\))(   (     )\()) (   (   (   (()/(  |  /  
+(()/(  ((((_)(  ((_)()\  )\   ((_)\  )\  )\  )\   /(_)) | /   
+ /(_))_ )\ _ )\ (_()((_)((_)    ((_)((_)((_)((_) (_))   |/    
+(_)) __|(_)_\(_)|  \/  || __|  / _ `\ \ / / | __|| _ \ ( )    
+  | (_ | / _ \  | |\/| || _|  | (_) |\ V /  | _| |   / )\     
+   \___|/_/ \_\ |_|  |_||___|  \___/  \_/   |___||_|_\((_)    """)
+    print()
+    loser = "Player " + players[turn] + " loses!"
+    print(loser.center(62, " "))
+        
 # main - DO NOT MODIFY CODE BELOW THIS LINE!
 show_start_screen()
 
